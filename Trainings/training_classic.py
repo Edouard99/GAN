@@ -8,6 +8,12 @@ import torchvision.utils as vutils
 import numpy as np
 from IPython.display import display
 
+
+def BCEsmooth(input,target):
+  target_ls= target*(1-0.1)+0.1/2
+  criterion = torch.nn.BCELoss().cuda()
+  return criterion(input,target_ls)
+
 def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,pathsavenet,pathsaveimg,fixed_noise):
     # Lists to keep track of progress
     img_list = []
