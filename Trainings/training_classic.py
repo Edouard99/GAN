@@ -116,7 +116,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
             if (savenet):
                 torch.save(netD.state_dict(), os.path.join(pathsavenet,"netD"+str(epoch)+".pth"))
                 torch.save(netG.state_dict(), os.path.join(pathsavenet,"netG"+str(epoch)+".pth"))
-            img_to_save=np.transpose(vutils.make_grid(fake, padding=2, normalize=True).cpu(),(1,2,0))
+            img_to_save=np.transpose(vutils.make_grid(fake, padding=2, normalize=True).cpu().numpy(),(1,2,0))
             plt.imsave(os.path.join(pathsaveimg,"grid_"+str(epoch)+".png"),img_to_save)
             #plt.imshow(img_to_save)
             #plt.savefig("grid_"+str(epoch)+".png")
