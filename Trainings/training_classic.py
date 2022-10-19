@@ -9,9 +9,9 @@ import numpy as np
 from IPython.display import display
 
 
-def BCEsmooth(input,target):
+def BCEsmooth(input,target,device):
   target_ls= target*(1-0.1)+0.1/2
-  criterion = torch.nn.BCELoss().cuda()
+  criterion = torch.nn.BCELoss().to(device)
   return criterion(input,target_ls)
 
 def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,pathsavenet,pathsaveimg,fixed_noise):
@@ -38,7 +38,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
             b_size = real_cpu.size(0)
             label = torch.full((b_size,), real_label, dtype=torch.float, device=device)
             output = netD(real_cpu).view(-1)
-            errD_real = BCEsmooth(output, label)
+            errD_real = BCEsmooth(output, label,device)
             errD_real.backward()
             D_x = output.mean().item() #Mean prediction on the batch
 
@@ -48,7 +48,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
             fake = netG(noise)
             label.fill_(fake_label)
             output = netD(fake.detach()).view(-1)
-            errD_fake = BCEsmooth(output, label)
+            errD_fake = BCEsmooth(output, label,device)
             errD_fake.backward()
             D_G_z1 = output.mean().item() #Mean prediction on the batch
 
@@ -73,7 +73,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
             netG.zero_grad()
             label.fill_(real_label)
             output = netD(fake).view(-1)
-            errG = BCEsmooth(output, label)
+            errG = BCEsmooth(output, label,device)
             errG.backward()
             D_G_z2 = output.mean().item()
 
