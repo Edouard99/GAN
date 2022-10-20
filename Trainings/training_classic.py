@@ -1,5 +1,5 @@
 import torch
-#from .basic_functions import *
+from .basic_functions import *
 from tensorflow.keras.utils import array_to_img
 from IPython.display import clear_output
 import matplotlib.pyplot as plt
@@ -8,17 +8,6 @@ import torchvision.utils as vutils
 import numpy as np
 from IPython.display import display
 import random
-
-
-def BCEsmooth(input,target,device):
-  target_ls= target*(1-0.1)+0.1/2
-  criterion = torch.nn.BCELoss().to(device)
-  return criterion(input,target_ls)
-
-def Normalization(fake):
-  for i in range(0,3):
-      fake[i]=(fake[i]-fake[i].min())/(fake[i].max()-fake[i].min())
-  return fake
 
 def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,pathsavenet,pathsaveimg,fixed_noise):
     # Lists to keep track of progress
@@ -138,4 +127,4 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
             plt.imshow(img_to_save)
             #plt.savefig("grid_"+str(epoch)+".png")
 
-    return img_list,G_losses,D_losses,iters
+    return img_list,G_losses,D_losses
