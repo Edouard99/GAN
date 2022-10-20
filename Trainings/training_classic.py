@@ -1,5 +1,5 @@
 import torch
-from .basic_functions import *
+#from .basic_functions import *
 from tensorflow.keras.utils import array_to_img
 from IPython.display import clear_output
 import matplotlib.pyplot as plt
@@ -7,7 +7,18 @@ import os
 import torchvision.utils as vutils
 import numpy as np
 from IPython.display import display
+import random
 
+
+def BCEsmooth(input,target,device):
+  target_ls= target*(1-0.1)+0.1/2
+  criterion = torch.nn.BCELoss().to(device)
+  return criterion(input,target_ls)
+
+def Normalization(fake):
+  for i in range(0,3):
+      fake[i]=(fake[i]-fake[i].min())/(fake[i].max()-fake[i].min())
+  return fake
 
 def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,pathsavenet,pathsaveimg,fixed_noise):
     # Lists to keep track of progress
@@ -49,6 +60,8 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
             errD_fake = BCEsmooth(output, label,device)
             errD_fake.backward()
             D_G_z1 = output.mean().item() #Mean prediction on the batch
+            if ((epoch == num_epochs-1) and (i == len(dataloader)-1)):
+              print(noise.detach().cpu().numpy())
 
             ## Compute Error of the Discriminant on both batchs
             errD = errD_real + errD_fake
@@ -80,7 +93,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
 
             # Output training stats
             if i % 25 == 0:
-              print('[{}/{}][{}/{}]\tLoss_D: {}\tLoss_G: {}\tD(x): {}\tD(G(z)): {} / {}'.format(
+              print('[{}/{}][{}/{}]\tLoss_D: {}\tLoss_G: {}\tD(x): {}\tD(G(z)): {} / {}\t random:{}\t nprand:{}\t torchrand:{}'.format(
                       epoch, 
                       num_epochs, 
                       i, 
@@ -89,19 +102,28 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                       errG.item(), 
                       D_x, 
                       D_G_z1, 
-                      D_G_z2))
+                      D_G_z2,
+                      random.random(),
+                      np.random.random(),
+                      torch.randn([1]).item()))
 
             G_losses.append(errG.item())
             D_losses.append(errD.item())
             # Check how the generator is doing by saving G's output on fixed_noise
-            if (iters % 100 == 0) or ((epoch == num_epochs-1) and (i == len(dataloader)-1)):
+            """if (iters % 100 == 0) or ((epoch == num_epochs-1) and (i == len(dataloader)-1)):
+                    clear_output(wait=True)
+                    f_noise = torch.randn(1, nz, 1, 1, device=device)
+                    fake = netG(f_noise).detach().cpu()
+                    faken=Normalization(fake[0])
+                    display(array_to_img(np.transpose(faken,(1,2,0))))"""
+
+            if (iters % 100 == 0):
                     with torch.no_grad():
                       clear_output(wait=True)
                       f_noise = torch.randn(1, nz, 1, 1, device=device)
                       fake = netG(f_noise).detach().cpu()
                     faken=Normalization(fake[0])
                     display(array_to_img(np.transpose(faken,(1,2,0))))
-
             iters += 1    
         
         if epoch%4==0 :
