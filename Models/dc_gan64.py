@@ -7,7 +7,7 @@ class MinibatchDiscrimination2d(nn.Module):
       self.in_flt = in_flt
       self.out_flt = out_flt
       self.intermediate_features = intermediate_features
-
+      torch.use_deterministic_algorithms(True)
       self.conv2d= nn.Conv2d(in_flt, 3, 4, 4, 0, bias=False).to(device) #out of conv -> 3 channels, 4x4 kernel, no pad, stride 4
       self.conv2dt= nn.ConvTranspose2d(out_flt, out_flt, 4, 4, 0, bias=False).to(device)
 
@@ -15,6 +15,7 @@ class MinibatchDiscrimination2d(nn.Module):
       self.T = nn.Parameter( 
           torch.Tensor(3*self.t*self.t, out_flt*self.t*self.t, self.intermediate_features)
         )
+        
     def forward(self, x):
         x_r=self.conv2d(x) #in 32x3x32x32 -> 32x3x8x8
         M = torch.mm(x_r.view(-1,3*self.t*self.t), self.T.view(3*self.t*self.t, -1))#32x2048 =32 x 2*8*8*16 
@@ -75,10 +76,10 @@ class Discriminator(nn.Module):
         self.device=device
         self.main = nn.Sequential(
             # input is (nc) x 64 x 64
-            nn.Conv2d(nc, ndf+2, 4, 2, 1, bias=False),
+            nn.Conv2d(nc, ndf, 4, 2, 1, bias=False),
             nn.LeakyReLU(0.2, inplace=True),
             # state size. (ndf) x 32 x 32
-            #MinibatchDiscrimination2d(32,ndf,2,device),
+            MinibatchDiscrimination2d(32,ndf,2,device),
             nn.Conv2d(ndf+2, ndf * 2, 4, 2, 1, bias=False),
             nn.BatchNorm2d(ndf * 2),
             nn.LeakyReLU(0.2, inplace=True),
