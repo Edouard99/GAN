@@ -2,14 +2,14 @@ import torch.nn as nn
 import torch
 
 class MinibatchDiscrimination2d(nn.Module):
-    def __init__(self,in_size, in_flt,out_flt,intermediate_features=16):
+    def __init__(self,in_size, in_flt,out_flt,device,intermediate_features=16):
       super(MinibatchDiscrimination2d, self).__init__()
       self.in_flt = in_flt
       self.out_flt = out_flt
       self.intermediate_features = intermediate_features
 
-      self.conv2d= nn.Conv2d(in_flt, 3, 4, 4, 0, bias=False).cuda() #out of conv -> 3 channels, 4x4 kernel, no pad, stride 4
-      self.conv2dt= nn.ConvTranspose2d(out_flt, out_flt, 4, 4, 0, bias=False).cuda()
+      self.conv2d= nn.Conv2d(in_flt, 3, 4, 4, 0, bias=False).to(device) #out of conv -> 3 channels, 4x4 kernel, no pad, stride 4
+      self.conv2dt= nn.ConvTranspose2d(out_flt, out_flt, 4, 4, 0, bias=False).to(device)
 
       self.t=int((in_size-4)/4)+1
       self.T = nn.Parameter( 
@@ -68,16 +68,17 @@ class Generator(nn.Module):
         return self.main(input)
         
 class Discriminator(nn.Module):
-    def __init__(self, nc, ndf):
+    def __init__(self, nc, ndf, device):
         super(Discriminator, self).__init__()
         self.nc=nc
         self.ndf=ndf
+        self.device=device
         self.main = nn.Sequential(
             # input is (nc) x 64 x 64
             nn.Conv2d(nc, ndf, 4, 2, 1, bias=False),
             nn.LeakyReLU(0.2, inplace=True),
             # state size. (ndf) x 32 x 32
-            MinibatchDiscrimination2d(32,ndf,2),
+            MinibatchDiscrimination2d(32,ndf,2,device),
             nn.Conv2d(ndf+2, ndf * 2, 4, 2, 1, bias=False),
             nn.BatchNorm2d(ndf * 2),
             nn.LeakyReLU(0.2, inplace=True),

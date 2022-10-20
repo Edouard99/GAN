@@ -45,7 +45,9 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
             if iters==0:
               zizi=output
               zozo=label
+              zaza=real_cpu
               print(zizi.detach().cpu().numpy())
+              print(zaza.detach().cpu().numpy())
               print(zozo.detach().cpu().numpy())
             errD_real = BCEsmooth(output, label,device)
             errD_real.backward()
