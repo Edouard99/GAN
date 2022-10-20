@@ -46,9 +46,6 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
               zizi=output
               zozo=label
               zaza=real_cpu
-              print(zizi.detach().cpu().numpy())
-              print(zaza.detach().cpu().numpy())
-              print(zozo.detach().cpu().numpy())
             errD_real = BCEsmooth(output, label,device)
             errD_real.backward()
             D_x = output.mean().item() #Mean prediction on the batch
@@ -63,7 +60,9 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
             errD_fake.backward()
             D_G_z1 = output.mean().item() #Mean prediction on the batch
             if ((epoch == num_epochs-1) and (i == len(dataloader)-1)):
-              print(noise.detach().cpu().numpy())
+              print(zizi.detach().cpu().numpy())
+              print(zaza.detach().cpu().numpy())
+              print(zozo.detach().cpu().numpy())
 
             ## Compute Error of the Discriminant on both batchs
             errD = errD_real + errD_fake
