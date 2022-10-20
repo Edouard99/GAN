@@ -13,8 +13,9 @@ class MinibatchDiscrimination2d(nn.Module):
 
       self.t=int((in_size-4)/4)+1
       self.T = nn.Parameter( 
-          torch.Tensor(3*self.t*self.t, out_flt*self.t*self.t, self.intermediate_features)
+          torch.Tensor(3*self.t*self.t, out_flt*self.t*self.t, self.intermediate_features), requires_grad=True
         )
+      torch.nn.init.xavier_uniform_(self.T.data)
         
     def forward(self, x):
         x_r=self.conv2d(x) #in 32x3x32x32 -> 32x3x8x8
