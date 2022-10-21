@@ -31,125 +31,125 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
             ############################
             ## Train with all-real batch
             k=torch.rand(1)
-            if epoch>=54:
-                if (0.0001<k<0.001 or boostdis==True) and boostgen==False:    #train discr
-                    if ndis==0:
-                        boostdis=True
-                    netD.zero_grad()
-                    #real
-                    real_cpu = data[0].to(device)
-                    b_size = real_cpu.size(0)
-                    label = torch.full((b_size,), real_label, dtype=torch.float, device=device)
-                    output = netD(real_cpu).view(-1)
-                    errD_real = BCEsmooth(output, label,device)
-                    errD_real.backward()
-                    D_x = output.mean().item()
-                    #fake
-                    noise = torch.randn(b_size, nz, 1, 1, device=device)
-                    fake = netG(noise)
-                    label.fill_(fake_label)
-                    output = netD(fake.detach()).view(-1)
-                    errD_fake = BCEsmooth(output, label,device)
-                    errD_fake.backward()
-                    D_G_z1 = output.mean().item()
-                    errD = errD_real + errD_fake
-                    optimizerD.step()
-                    ndis+=1
-                    if ndis==100:
-                        boostdis=False
-                        ndis=0
-                if k<0.93 and boostdis==False and boostgen==False:
-                    netD.zero_grad()
-                    #real
-                    real_cpu = data[0].to(device)
-                    b_size = real_cpu.size(0)
-                    label = torch.full((b_size,), real_label, dtype=torch.float, device=device)
-                    output = netD(real_cpu).view(-1)
-                    errD_real = BCEsmooth(output, label,device)
-                    errD_real.backward()
-                    D_x = output.mean().item()
-                    #fake
-                    noise = torch.randn(b_size, nz, 1, 1, device=device)
-                    fake = netG(noise)
-                    label.fill_(fake_label)
-                    output = netD(fake.detach()).view(-1)
-                    errD_fake = BCEsmooth(output, label,device)
-                    errD_fake.backward()
-                    D_G_z1 = output.mean().item()
-                    errD = errD_real + errD_fake
-                    optimizerD.step()
-                if k>=0.93 and boostdis==False and boostgen==False:
-                    netD.zero_grad()
-                    #real
-                    real_cpu = data[0].to(device)
-                    b_size = real_cpu.size(0)
-                    label = torch.full((b_size,), fake_label, dtype=torch.float, device=device)
-                    output = netD(real_cpu).view(-1)
-                    errD_real = BCEsmooth(output, label,device)
-                    errD_real.backward()
-                    D_x = output.mean().item()
-                    #fake
-                    noise = torch.randn(b_size, nz, 1, 1, device=device)
-                    fake = netG(noise)
-                    label.fill_(real_label)
-                    output = netD(fake.detach()).view(-1)
-                    errD_fake = BCEsmooth(output, label,device)
-                    errD_fake.backward()
-                    D_G_z1 = output.mean().item()
-                    errD = errD_real + errD_fake
-                    optimizerD.step()
-
-
-                if (k<0.0001 or boostgen==True)and boostdis==False:
-                    if ngen==0:
-                        boostgen=True
-                    #Update Gen
-                    netG.zero_grad()
-                    noise = torch.randn(b_size, nz, 1, 1, device=device)
-                    label.fill_(real_label) # fake labels are real for generator cost
-                    fake = netG(noise)  
-                    # Since we just updated D, perform another forward pass of all-fake batch through D
-                    output = netD(fake).view(-1)
-                    errG = BCEsmooth(output, label,device)
-                    errG.backward()
-                    D_G_z2 = output.mean().item()
-                    optimizerG.step()
-                    ngen+=1
-                    if ngen==100:
-                        boostgen=False
-                        ngen=0
-                if k>=0.001 and boostdis==False and boostgen==False :
-                    #Update Gen
-                    netG.zero_grad()
-                    noise = torch.randn(b_size, nz, 1, 1, device=device)
-                    label.fill_(real_label)  # fake labels are real for generator cost
-                    # Since we just updated D, perform another forward pass of all-fake batch through D
-                    fake = netG(noise) 
-                    output = netD(fake).view(-1)
-                    errG = BCEsmooth(output, label,device)
-                    errG.backward()
-                    D_G_z2 = output.mean().item()
-                    optimizerG.step()
             
+            if (0.0001<k<0.001 or boostdis==True) and boostgen==False:    #train discr
+                if ndis==0:
+                    boostdis=True
+                netD.zero_grad()
+                #real
+                real_cpu = data[0].to(device)
+                b_size = real_cpu.size(0)
+                label = torch.full((b_size,), real_label, dtype=torch.float, device=device)
+                output = netD(real_cpu).view(-1)
+                errD_real = BCEsmooth(output, label,device)
+                errD_real.backward()
+                D_x = output.mean().item()
+                #fake
+                noise = torch.randn(b_size, nz, 1, 1, device=device)
+                fake = netG(noise)
+                label.fill_(fake_label)
+                output = netD(fake.detach()).view(-1)
+                errD_fake = BCEsmooth(output, label,device)
+                errD_fake.backward()
+                D_G_z1 = output.mean().item()
+                errD = errD_real + errD_fake
+                optimizerD.step()
+                ndis+=1
+                if ndis==100:
+                    boostdis=False
+                    ndis=0
+            if k<0.93 and boostdis==False and boostgen==False:
+                netD.zero_grad()
+                #real
+                real_cpu = data[0].to(device)
+                b_size = real_cpu.size(0)
+                label = torch.full((b_size,), real_label, dtype=torch.float, device=device)
+                output = netD(real_cpu).view(-1)
+                errD_real = BCEsmooth(output, label,device)
+                errD_real.backward()
+                D_x = output.mean().item()
+                #fake
+                noise = torch.randn(b_size, nz, 1, 1, device=device)
+                fake = netG(noise)
+                label.fill_(fake_label)
+                output = netD(fake.detach()).view(-1)
+                errD_fake = BCEsmooth(output, label,device)
+                errD_fake.backward()
+                D_G_z1 = output.mean().item()
+                errD = errD_real + errD_fake
+                optimizerD.step()
+            if k>=0.93 and boostdis==False and boostgen==False:
+                netD.zero_grad()
+                #real
+                real_cpu = data[0].to(device)
+                b_size = real_cpu.size(0)
+                label = torch.full((b_size,), fake_label, dtype=torch.float, device=device)
+                output = netD(real_cpu).view(-1)
+                errD_real = BCEsmooth(output, label,device)
+                errD_real.backward()
+                D_x = output.mean().item()
+                #fake
+                noise = torch.randn(b_size, nz, 1, 1, device=device)
+                fake = netG(noise)
+                label.fill_(real_label)
+                output = netD(fake.detach()).view(-1)
+                errD_fake = BCEsmooth(output, label,device)
+                errD_fake.backward()
+                D_G_z1 = output.mean().item()
+                errD = errD_real + errD_fake
+                optimizerD.step()
 
-                # Output training stats
-                if i % 25 == 0:
-                    print('[{}/{}][{}/{}]\tLoss_D: {}\tLoss_G: {}\tD(x): {}\tD(G(z)): {} / {}\t random:{}\t nprand:{}\t torchrand:{}'.format(
-                        epoch, 
-                        num_epochs, 
-                        i, 
-                        len(dataloader),
-                        errD.item(), 
-                        errG.item(), 
-                        D_x, 
-                        D_G_z1, 
-                        D_G_z2,
-                        random.random(),
-                        np.random.random(),
-                        torch.randn([1]).item()))
 
-                G_losses.append(errG.item())
-                D_losses.append(errD.item())
+            if (k<0.0001 or boostgen==True)and boostdis==False:
+                if ngen==0:
+                    boostgen=True
+                #Update Gen
+                netG.zero_grad()
+                noise = torch.randn(b_size, nz, 1, 1, device=device)
+                label.fill_(real_label) # fake labels are real for generator cost
+                fake = netG(noise)  
+                # Since we just updated D, perform another forward pass of all-fake batch through D
+                output = netD(fake).view(-1)
+                errG = BCEsmooth(output, label,device)
+                errG.backward()
+                D_G_z2 = output.mean().item()
+                optimizerG.step()
+                ngen+=1
+                if ngen==100:
+                    boostgen=False
+                    ngen=0
+            if k>=0.001 and boostdis==False and boostgen==False :
+                #Update Gen
+                netG.zero_grad()
+                noise = torch.randn(b_size, nz, 1, 1, device=device)
+                label.fill_(real_label)  # fake labels are real for generator cost
+                # Since we just updated D, perform another forward pass of all-fake batch through D
+                fake = netG(noise) 
+                output = netD(fake).view(-1)
+                errG = BCEsmooth(output, label,device)
+                errG.backward()
+                D_G_z2 = output.mean().item()
+                optimizerG.step()
+        
+
+            # Output training stats
+            if i % 25 == 0:
+                print('[{}/{}][{}/{}]\tLoss_D: {}\tLoss_G: {}\tD(x): {}\tD(G(z)): {} / {}\t random:{}\t nprand:{}\t torchrand:{}'.format(
+                    epoch, 
+                    num_epochs, 
+                    i, 
+                    len(dataloader),
+                    errD.item(), 
+                    errG.item(), 
+                    D_x, 
+                    D_G_z1, 
+                    D_G_z2,
+                    random.random(),
+                    np.random.random(),
+                    torch.randn([1]).item()))
+
+            G_losses.append(errG.item())
+            D_losses.append(errD.item())
             # Check how the generator is doing by saving G's output on fixed_noise
 
             if (iters % 100 == 0):
