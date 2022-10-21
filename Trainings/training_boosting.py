@@ -9,7 +9,7 @@ import numpy as np
 from IPython.display import display
 import random
 
-def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,pathsavenet,pathsaveimg,fixed_noise,monitor=True,trsh=0.8):
+def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,pathsavenet,pathsaveimg,fixed_noise):
     # Lists to keep track of progress
     img_list = []
     G_losses = []
@@ -56,7 +56,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                 b_size = real_cpu.size(0)
                 label = torch.full((b_size,), real_label, dtype=torch.float, device=device)
                 output = netD(real_cpu).view(-1)
-                errD_real = BCEsmooth(output, label)
+                errD_real = BCEsmooth(output, label,device)
                 errD_real.backward()
                 D_x = output.mean().item()
                 #fake
