@@ -35,7 +35,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                     b_size = real_cpu.size(0)
                     label = torch.full((b_size,), real_label, dtype=torch.float, device=device)
                     output = netD(real_cpu).view(-1)
-                    errD_real = BCEsmooth(output, label)
+                    errD_real = BCEsmooth(output, label,device)
                     errD_real.backward()
                     D_x = output.mean().item()
                     #fake
@@ -43,7 +43,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                     fake = netG(noise)
                     label.fill_(fake_label)
                     output = netD(fake.detach()).view(-1)
-                    errD_fake = BCEsmooth(output, label)
+                    errD_fake = BCEsmooth(output, label,device)
                     errD_fake.backward()
                     D_G_z1 = output.mean().item()
                     errD = errD_real + errD_fake
@@ -64,7 +64,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                 fake = netG(noise)
                 label.fill_(fake_label)
                 output = netD(fake.detach()).view(-1)
-                errD_fake = BCEsmooth(output, label)
+                errD_fake = BCEsmooth(output, label,device)
                 errD_fake.backward()
                 D_G_z1 = output.mean().item()
                 errD = errD_real + errD_fake
@@ -76,7 +76,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                 b_size = real_cpu.size(0)
                 label = torch.full((b_size,), fake_label, dtype=torch.float, device=device)
                 output = netD(real_cpu).view(-1)
-                errD_real = BCEsmooth(output, label)
+                errD_real = BCEsmooth(output, label,device)
                 errD_real.backward()
                 D_x = output.mean().item()
                 #fake
@@ -84,7 +84,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                 fake = netG(noise)
                 label.fill_(real_label)
                 output = netD(fake.detach()).view(-1)
-                errD_fake = BCEsmooth(output, label)
+                errD_fake = BCEsmooth(output, label,device)
                 errD_fake.backward()
                 D_G_z1 = output.mean().item()
                 errD = errD_real + errD_fake
@@ -100,7 +100,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                     fake = netG(noise)  
                     # Since we just updated D, perform another forward pass of all-fake batch through D
                     output = netD(fake).view(-1)
-                    errG = BCEsmooth(output, label)
+                    errG = BCEsmooth(output, label,device)
                     errG.backward()
                     D_G_z2 = output.mean().item()
                     optimizerG.step()
@@ -110,7 +110,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                 label.fill_(real_label)  # fake labels are real for generator cost
                 # Since we just updated D, perform another forward pass of all-fake batch through D
                 output = netD(fake).view(-1)
-                errG = BCEsmooth(output, label)
+                errG = BCEsmooth(output, label,device)
                 errG.backward()
                 D_G_z2 = output.mean().item()
                 optimizerG.step()
