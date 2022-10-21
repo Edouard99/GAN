@@ -31,7 +31,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
             ############################
             ## Train with all-real batch
             k=torch.rand(1)
-            if epoch<=54:
+            if epoch>=54:
                 if (0.0001<k<0.001 or boostdis==True) and boostgen==False:    #train discr
                     if ndis==0:
                         boostdis=True
