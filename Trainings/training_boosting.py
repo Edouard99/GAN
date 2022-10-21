@@ -121,8 +121,10 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                 if k>=0.001 and boostdis==False and boostgen==False :
                     #Update Gen
                     netG.zero_grad()
+                    noise = torch.randn(b_size, nz, 1, 1, device=device)
                     label.fill_(real_label)  # fake labels are real for generator cost
                     # Since we just updated D, perform another forward pass of all-fake batch through D
+                    fake = netG(noise) 
                     output = netD(fake).view(-1)
                     errG = BCEsmooth(output, label,device)
                     errG.backward()
