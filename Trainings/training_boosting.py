@@ -128,7 +128,8 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                     errG.backward()
                     D_G_z2 = output.mean().item()
                     optimizerG.step()
-
+            else:
+                D_x,D_G_z1,D_G_z2,errD,errG=0,0,0,0,0
 
             # Output training stats
             if i % 25 == 0:
