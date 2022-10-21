@@ -55,15 +55,6 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
             errD = errD_real + errD_fake
             ## Update D
             optimizerD.step()
-            #   if monitor==True:
-            #     if iters !=0 :
-            #       if errD.item() > 0.8*errG.item():
-            #         optimizerD.step()
-            #     else :
-            #       optimizerD.step()
-            #   else :
-            #     optimizerD.step()
-
 
             ############################
             # (2) Update G network: minimize - log(D(G(z)))
@@ -81,7 +72,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
 
             # Output training stats
             if i % 25 == 0:
-              print('[{}/{}][{}/{}]\tLoss_D: {}\tLoss_G: {}\tD(x): {}\tD(G(z)): {} / {}\t random:{}\t nprand:{}\t torchrand:{}'.format(
+              print('[{}/{}][{}/{}]\tLoss_D: {}\tLoss_G: {}\tD(x): {}\tD(G(z)): {} / {}'.format(
                       epoch, 
                       num_epochs, 
                       i, 

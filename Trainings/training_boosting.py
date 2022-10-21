@@ -133,16 +133,16 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
 
             # Output training stats
             if i % 25 == 0:
-                print('[{}/{}][{}/{}]\tLoss_D: {}\tLoss_G: {}\tD(x): {}\tD(G(z)): {} / {}\t random:{}\t nprand:{}\t torchrand:{}'.format(
-                    epoch, 
-                    num_epochs, 
-                    i, 
-                    len(dataloader),
-                    errD.item(), 
-                    errG.item(), 
-                    D_x, 
-                    D_G_z1, 
-                    D_G_z2))
+                print('[{}/{}][{}/{}]\tLoss_D: {}\tLoss_G: {}\tD(x): {}\tD(G(z)): {} / {}'.format(
+                      epoch, 
+                      num_epochs, 
+                      i, 
+                      len(dataloader),
+                      errD.item(), 
+                      errG.item(), 
+                      D_x, 
+                      D_G_z1, 
+                      D_G_z2))
 
             G_losses.append(errG.item())
             D_losses.append(errD.item())
