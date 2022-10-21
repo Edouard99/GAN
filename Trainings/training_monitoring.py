@@ -7,7 +7,6 @@ import os
 import torchvision.utils as vutils
 import numpy as np
 from IPython.display import display
-import random
 
 def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,pathsavenet,pathsaveimg,fixed_noise,monitor=True,trsh=0.8):
     # Lists to keep track of progress
@@ -90,16 +89,13 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                       errG.item(), 
                       D_x, 
                       D_G_z1, 
-                      D_G_z2,
-                      random.random(),
-                      np.random.random(),
-                      torch.randn([1]).item()))
+                      D_G_z2))
 
             G_losses.append(errG.item())
             D_losses.append(errD.item())
             # Check how the generator is doing by saving G's output on fixed_noise
 
-            if (iters % 100 == 0):
+            if (iters % 100 == 0) or ((epoch == num_epochs-1) and (i == len(dataloader)-1)):
                     with torch.no_grad():
                       clear_output(wait=True)
                       f_noise = torch.randn(1, nz, 1, 1, device=device)
