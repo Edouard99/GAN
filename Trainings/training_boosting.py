@@ -128,27 +128,26 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                     errG.backward()
                     D_G_z2 = output.mean().item()
                     optimizerG.step()
-            else:
-                D_x,D_G_z1,D_G_z2,errD,errG=0,0,0,0,0
+            
 
-            # Output training stats
-            if i % 25 == 0:
-              print('[{}/{}][{}/{}]\tLoss_D: {}\tLoss_G: {}\tD(x): {}\tD(G(z)): {} / {}\t random:{}\t nprand:{}\t torchrand:{}'.format(
-                      epoch, 
-                      num_epochs, 
-                      i, 
-                      len(dataloader),
-                      errD.item(), 
-                      errG.item(), 
-                      D_x, 
-                      D_G_z1, 
-                      D_G_z2,
-                      random.random(),
-                      np.random.random(),
-                      torch.randn([1]).item()))
+                # Output training stats
+                if i % 25 == 0:
+                    print('[{}/{}][{}/{}]\tLoss_D: {}\tLoss_G: {}\tD(x): {}\tD(G(z)): {} / {}\t random:{}\t nprand:{}\t torchrand:{}'.format(
+                        epoch, 
+                        num_epochs, 
+                        i, 
+                        len(dataloader),
+                        errD.item(), 
+                        errG.item(), 
+                        D_x, 
+                        D_G_z1, 
+                        D_G_z2,
+                        random.random(),
+                        np.random.random(),
+                        torch.randn([1]).item()))
 
-            G_losses.append(errG.item())
-            D_losses.append(errD.item())
+                G_losses.append(errG.item())
+                D_losses.append(errD.item())
             # Check how the generator is doing by saving G's output on fixed_noise
 
             if (iters % 100 == 0):
