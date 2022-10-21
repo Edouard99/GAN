@@ -19,6 +19,10 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
     real_label = 1.
     fake_label = 0.
     nz=netG.nz
+    ndis=0
+    ngen=0
+    boostdis=False
+    boostgen=False
     print("Starting Training Loop...")
     for epoch in range(num_epochs):
         for i, data in enumerate(dataloader, 0):
