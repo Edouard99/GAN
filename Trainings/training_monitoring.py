@@ -9,6 +9,33 @@ import numpy as np
 from IPython.display import display
 
 def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,pathsavenet,pathsaveimg,fixed_noise,monitor=True,trsh=0.8):
+    """ This function trains the network with a classic GAN training + Monitoring of training:
+        Discriminant is fed with real and generated images. The goal of the discriminant is to assess the probability of the image being real or not.
+        Discriminant's loss is calculated with Binary Cross Entropy Loss with label 0 = fake and label 1 = real
+        Generator's Loss is based on Discriminant results on generated images
+        Discriminant's and Generator's weights are optimized in order to minimize each loss.
+
+        Monitoring : In order to prevent the discriminant to become too strong, the discriminant is updated only if Discriminant_Loss > treshold*Generator_Loss
+
+        Each 4 epochs this function saves the network weights (optionnal: savenet=True/False) and saves a grid of images generated from fixed noise
+        This function returns a list of the images grids generated during training, the Generator Loss and the Discriminant Loss evolution
+
+            dataloader : dataloader object that will load your images and feed it to the network (torch dataloader)
+            netD : discriminant neural network (nn Module)
+            netG : generator neural network (nn Module)
+            optimizerD : discriminant's optimizer (torch Optimizer)
+            optimizerG : generator's optimizer (torch Optimizer)
+            num_epochs : number of epochs for training (int)
+            device : device on which training is done (CPU/GPU) (torch device)
+            savenet : True = save the network weights each 4 epochs in pathsavenet location, False = do not save the network weights (boolean)
+            pathsavenet : path to the directory where you want to save network weights, "" if savenet=False (str)
+            pathsaveimg : path to the directory where you want to save the grid of images generated from fixed noise each 4 epochs (str)
+            fixed_noise : noise that will be used to generate the grid of N images for a generator with nz size of input(tensor shape: N, nz, 1, 1)
+            monitor : activating or deactivating monitoring, monitor=False is equivalent to training_classic.py train function (boolean) - default value = true
+            trsh : treshold used for monitoring (float) - default value = 0.8
+    """
+
+
     # Lists to keep track of progress
     img_list = []
     G_losses = []
@@ -39,7 +66,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
               print(zozo.detach().cpu().numpy())
             errD_real = BCEsmooth(output, label,device)
             errD_real.backward()
-            D_x = output.mean().item() #Mean prediction on the batch
+            D_x = output.mean().item() # Mean prediction on the batch
 
 
             ## Train with all-fake batch
@@ -49,11 +76,12 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
             output = netD(fake.detach()).view(-1)
             errD_fake = BCEsmooth(output, label,device)
             errD_fake.backward()
-            D_G_z1 = output.mean().item() #Mean prediction on the batch
+            D_G_z1 = output.mean().item() # Mean prediction on the batch
 
             ## Compute Error of the Discriminant on both batchs
             errD = errD_real + errD_fake
             ## Update D
+            ## If monitoring is ON, the discriminant is updated only if Discriminant_Loss > treshold*Generator_Loss
             if monitor==True:
                 if iters !=0 :
                     if errD.item() > trsh*errG.item():
@@ -103,7 +131,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                     faken=Normalization(fake[0])
                     display(array_to_img(np.transpose(faken,(1,2,0))))
             iters += 1    
-        
+        # Saves the network and images
         if epoch%4==0 :
             with torch.no_grad():
               fake = netG(fixed_noise).detach().cpu()

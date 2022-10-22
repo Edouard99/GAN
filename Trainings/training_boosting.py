@@ -9,6 +9,40 @@ import numpy as np
 from IPython.display import display
 
 def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,pathsavenet,pathsaveimg,fixed_noise):
+    """ This function trains the network with a GAN training including Boosting and Regularization:
+        Discriminant is fed with real and generated images. The goal of the discriminant is to assess the probability of the image being real or not.
+        Discriminant's loss is calculated with Binary Cross Entropy Loss with label 0 = fake and label 1 = real
+        Generator's Loss is based on Discriminant results on generated images
+        Discriminant's and Generator's weights are optimized in order to minimize each loss.
+
+        Boosting : at each iteration the Gan is trained depending on a random (uniform) generated value k in [0,1].
+                    - 0.0001<k<0.001 for next 100 iterations(including this one) ONLY the discriminant will be trained with real images labeled as real
+                        and fake images labeled as fake
+                    - 0.001<k<0.93 this iteration the discriminant will be trained with real images labeled as real
+                        and fake images labeled as fake
+                    - 0.93<=k<=1 this iteration the discriminant will be trained with real images labeled as fake
+                        and fake images labeled as real in order to add noise in the training for a most robust discriminant
+                    - 0<=k<0.0001 for the next 100 iteration(including this one) ONLY the generator will be trained
+                    - 0.001<k<=1 for this iteration the generator will be trained
+
+        Each 4 epochs this function saves the network weights (optionnal: savenet=True/False) and saves a grid of images generated from fixed noise
+        This function returns a list of the images grids generated during training, the Generator Loss and the Discriminant Loss evolution
+
+            dataloader : dataloader object that will load your images and feed it to the network (torch dataloader)
+            netD : discriminant neural network (nn Module)
+            netG : generator neural network (nn Module)
+            optimizerD : discriminant's optimizer (torch Optimizer)
+            optimizerG : generator's optimizer (torch Optimizer)
+            num_epochs : number of epochs for training (int)
+            device : device on which training is done (CPU/GPU) (torch device)
+            savenet : True = save the network weights each 4 epochs in pathsavenet location, False = do not save the network weights (boolean)
+            pathsavenet : path to the directory where you want to save network weights, "" if savenet=False (str)
+            pathsaveimg : path to the directory where you want to save the grid of images generated from fixed noise each 4 epochs (str)
+            fixed_noise : noise that will be used to generate the grid of N images for a generator with nz size of input(tensor shape: N, nz, 1, 1)
+    """ 
+
+
+
     # Lists to keep track of progress
     img_list = []
     G_losses = []
@@ -25,17 +59,17 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
     print("Starting Training Loop...")
     for epoch in range(num_epochs):
         for i, data in enumerate(dataloader, 0):
+            # Generating k value that will decide of the training for this iteration
+            k=torch.rand(1)
             ############################
             # (1) Update D network: minimize BCELOSS : -( log(D(x)) + log(1 - D(G(z))) )
             ############################
-            ## Train with all-real batch
-            k=torch.rand(1)
             
-            if (0.0001<k<0.001 or boostdis==True) and boostgen==False:    #train discr
+            if (0.0001<k<0.001 or boostdis==True) and boostgen==False: # Boosting
                 if ndis==0:
                     boostdis=True
                 netD.zero_grad()
-                #real
+                ## Train with all-real batch
                 real_cpu = data[0].to(device)
                 b_size = real_cpu.size(0)
                 label = torch.full((b_size,), real_label, dtype=torch.float, device=device)
@@ -43,7 +77,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                 errD_real = BCEsmooth(output, label,device)
                 errD_real.backward()
                 D_x = output.mean().item()
-                #fake
+                ## Train with all-fake batch
                 noise = torch.randn(b_size, nz, 1, 1, device=device)
                 fake = netG(noise)
                 label.fill_(fake_label)
@@ -57,9 +91,9 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                 if ndis==100:
                     boostdis=False
                     ndis=0
-            if k<0.93 and boostdis==False and boostgen==False:
+            if k<0.93 and boostdis==False and boostgen==False: # Normal
                 netD.zero_grad()
-                #real
+                ## Train with all-real batch
                 real_cpu = data[0].to(device)
                 b_size = real_cpu.size(0)
                 label = torch.full((b_size,), real_label, dtype=torch.float, device=device)
@@ -67,7 +101,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                 errD_real = BCEsmooth(output, label,device)
                 errD_real.backward()
                 D_x = output.mean().item()
-                #fake
+                ## Train with all-fake batch
                 noise = torch.randn(b_size, nz, 1, 1, device=device)
                 fake = netG(noise)
                 label.fill_(fake_label)
@@ -77,9 +111,9 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                 D_G_z1 = output.mean().item()
                 errD = errD_real + errD_fake
                 optimizerD.step()
-            if k>=0.93 and boostdis==False and boostgen==False:
+            if k>=0.93 and boostdis==False and boostgen==False: # Label switch for a more robust discriminant
                 netD.zero_grad()
-                #real
+                ## Train with all-real batch labeled as fake for a more robust discriminant
                 real_cpu = data[0].to(device)
                 b_size = real_cpu.size(0)
                 label = torch.full((b_size,), fake_label, dtype=torch.float, device=device)
@@ -87,7 +121,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                 errD_real = BCEsmooth(output, label,device)
                 errD_real.backward()
                 D_x = output.mean().item()
-                #fake
+                ## Train with all-fake batch labeled as real for a more robust discriminant
                 noise = torch.randn(b_size, nz, 1, 1, device=device)
                 fake = netG(noise)
                 label.fill_(real_label)
@@ -98,11 +132,12 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                 errD = errD_real + errD_fake
                 optimizerD.step()
 
-
-            if (k<0.0001 or boostgen==True)and boostdis==False:
+            ############################
+            # (2) Update G network: minimize - log(D(G(z)))
+            ###########################
+            if (k<0.0001 or boostgen==True)and boostdis==False: # Boosting
                 if ngen==0:
                     boostgen=True
-                #Update Gen
                 netG.zero_grad()
                 noise = torch.randn(b_size, nz, 1, 1, device=device)
                 label.fill_(real_label) # fake labels are real for generator cost
@@ -117,8 +152,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                 if ngen==100:
                     boostgen=False
                     ngen=0
-            if k>=0.001 and boostdis==False and boostgen==False :
-                #Update Gen
+            if k>=0.001 and boostdis==False and boostgen==False : # Normal
                 netG.zero_grad()
                 noise = torch.randn(b_size, nz, 1, 1, device=device)
                 label.fill_(real_label)  # fake labels are real for generator cost
@@ -156,7 +190,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                     faken=Normalization(fake[0])
                     display(array_to_img(np.transpose(faken,(1,2,0))))
             iters += 1    
-        
+        # Saves the network and images
         if epoch%4==0 :
             with torch.no_grad():
               fake = netG(fixed_noise).detach().cpu()
