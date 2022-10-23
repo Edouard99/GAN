@@ -34,7 +34,7 @@ In this project I have used different dataset :
 
 The following networks are mostly convolutionnal and deconvolutionnal networks. Yet it is known that GAN are based on complex equilibrium and that they can quickly become unstable and go to collapse mode :
 <p align="center">
-  <img alt="Features Extraction" title="Features Extraction" src="./Media/collapse.PNG" >
+  <img alt="Collapse Mode" title="Features Extraction" src="./Media/collapse.PNG" >
 </p>
 In both DCGAN and WGAN models a Mini Batch Discrimination Layer is implemented in the Discriminant. This layer prevents the Generator to produce the same image for multiple inputs. For more information see <a href="https://towardsdatascience.com/gan-ways-to-improve-gan-performance-acf37f9f59b">this link</a>.
 
@@ -55,13 +55,13 @@ A Deep Convolutionnal GAN (DC-GAN) is developped for (64px and 256px) using <a h
 The architecture of the GAN is given by the following figures :
 
 <p align="center">
-  <img alt="Features Extraction" title="Features Extraction" src="./Media/Generator.PNG" >
+  <img alt="Generator DCGAN" title="Features Extraction" src="./Media/Generator.PNG" >
 </p>
 <p align="center">
-  <img alt="Features Extraction" title="Features Extraction" src="./Media/Discriminant_DC.PNG" >
+  <img alt="Discriminant DCGAN" title="Features Extraction" src="./Media/Discriminant_DC.PNG" >
 </p>
 <p align="center">
-  <img alt="Features Extraction" title="Features Extraction" src="./Media/DCtraining.PNG" >
+  <img alt="Training DCGAN" title="Features Extraction" src="./Media/DCtraining.PNG" >
 </p>
 
 The generator input is a nz-sized vector (noise) that will be deconvolutionned into an image.
@@ -104,13 +104,13 @@ A Wasserstein GAN (W-GAN) is developped for (64px and 256px) using <a href="./Mo
 The architecture of the GAN is given by the following figures :
 
 <p align="center">
-  <img alt="Features Extraction" title="Features Extraction" src="./Media/Generator.PNG" >
+  <img alt="Generator WGAN" title="Features Extraction" src="./Media/Generator.PNG" >
 </p>
 <p align="center">
-  <img alt="Features Extraction" title="Features Extraction" src="./Media/Discriminant_WGAN.PNG" >
+  <img alt="Discriminant WGAN" title="Features Extraction" src="./Media/Discriminant_WGAN.PNG" >
 </p>
 <p align="center">
-  <img alt="Features Extraction" title="Features Extraction" src="./Media/WGANtraining.PNG" >
+  <img alt="W-GAN training" title="Features Extraction" src="./Media/WGANtraining.PNG" >
 </p>
 
 The generator input is a nz-sized vector (noise) that will be deconvolutionned into an image.
