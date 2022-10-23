@@ -72,6 +72,7 @@ The discrtiminant input is an image and the output is a number $\in$ [0;1]. 1 me
 The first training used is a classical DC GAN training, defined in <a href="./Trainings/training_classic.py">training_classic.py</a>. The discriminant D is fed with real (x) and fake (G(z)) images of the generator G at each iteration and the loss is calculated with a Binary Cross Entropy loss function :
 
 $$ D_{Loss}(x,z)= -(log(D(x)) + log(1-D(G(z))))$$
+
 $$ G_{Loss}(z)= -(log(D(G(z))))$$
 
 Then discriminant and generator are optimized in order to minimize these loss.
@@ -121,6 +122,7 @@ The training is a Wasserstein GAN training defined in <a href="./Trainings/train
 The discriminant D is fed with real (x) and fake (G(z)) images of the generator G at each iteration and the loss is calculated with a Binary Cross Entropy loss function :
 
 $$ Distance_{D} = D_{Loss}(x,z) = (\sum_{i=1}^{batch size} D(x_{i}) - \sum_{j=1}^{batch size} D(G(z_{j})))$$
+
 $$ Distance_{G} = G_{Loss}(z)= -(\sum_{i=1}^{batch size} D(G(z_{i})))$$
 
 The goal of the discriminant is to maximize the distance $ Distance_{G} $ between the distributions of the score given of real image and the distribution of score given for fake images. In this project we choose to minimize $ -Distance_{D} $. The more the distribution will be separated the more the decision to assess if the image is real or fake is accurate.
