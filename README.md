@@ -125,8 +125,8 @@ $$ Distance_{D} = D_{Loss}(x,z) = (\sum_{i=1}^{batch size} D(x_{i}) - \sum_{j=1}
 
 $$ Distance_{G} = G_{Loss}(z)= -(\sum_{i=1}^{batch size} D(G(z_{i})))$$
 
-The goal of the discriminant is to maximize the distance $ Distance_{G} $ between the distributions of the score given of real image and the distribution of score given for fake images. In this project we choose to minimize $ -Distance_{D} $. The more the distribution will be separated the more the decision to assess if the image is real or fake is accurate.
-The goal of the generator is to minimize the distance $ Distance_{G} $ between the distributions of the score given of real image and the distribution of score given for fake images. The generator tries to fool the discriminant with generated image that should be classified as real, it is reducing the distance between the distributions.
+The goal of the discriminant is to maximize the distance $Distance_{D}$ between the distributions of the score given of real image and the distribution of score given for fake images. In this project we choose to minimize $-Distance_{D}$. The more the distribution will be separated the more the decision to assess if the image is real or fake is accurate.
+The goal of the generator is to minimize the distance $Distance_{G}$ between the distributions of the score given of real image and the distribution of score given for fake images. The generator tries to fool the discriminant with generated image that should be classified as real, it is reducing the distance between the distributions.
 During this training we apply weights clipping on discriminant's weights and the discriminant is trained 3 times more than the generator.
 
 A RMSProp optimizer (lr=5e-5) has been used for both networks for stability reasons.
