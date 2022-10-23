@@ -1,8 +1,18 @@
 ## Table Of Contents
 * [Introduction](#introduction)
 * [Datasets](#datasets)
+* [Special GAN features](#special-gan-features)
+  * [Mini Batch Discrimination](#mini-batch-discrimination)
+  * [Label Smoothing](#label-smoothing)
+  * [Noisy Label](#noisy-label)
 * [DC-GAN](#dc-gan)
+  * [DC-GAN Architecture](#dc-gan-architecture)
+  * [Classic Training](#classic-training)
+  * [Monitored Training](#monitored-training)
+  * [Boost Training](#boost-training)
 * [W-GAN](#w-gan)
+  * [W-GAN Architecture](#w-gan-architecture)
+  * [W-GAN Training](#w-gan-training)
 * [Results](#results)
 * [References](#references)
 
@@ -18,152 +28,120 @@ In this project I have used different dataset :
 * A pokemon dataset (in 64px) that you can find on <a href="https://www.kaggle.com/search?q=pokemon">Kaggle</a>.
 * A pokemon dataset (in 256px) that you can find on <a href="https://www.kaggle.com/search?q=pokemon">Kaggle</a>.
 
+## Special Gan Features 
+
+###  Mini Batch Discrimination
+
+The following networks are mostly convolutionnal and deconvolutionnal networks. Yet it is known that GAN are based on complex equilibrium and that they can quickly become unstable and go to collapse mode :
+<p align="center">
+  <img alt="Features Extraction" title="Features Extraction" src="./Media/collapse.PNG" >
+</p>
+In both DCGAN and WGAN models a Mini Batch Discrimination Layer is implemented in the Discriminant. This layer prevents the Generator to produce the same image for multiple inputs. For more information see <a href="https://towardsdatascience.com/gan-ways-to-improve-gan-performance-acf37f9f59b">this link</a>.
+
+### Label Smoothing
+
+In order to avoid overconfidence for the Discriminant in the DCGAN model a BCE with label smoothing is used, see the custom function in <a href="./Trainings/basic_functions.py">basic_functions.py</a>.
+
+### Noisy Label
+
+Once again to avoid overconfidence of the Discriminant, in one of the training of DCGAN model the label are swapped between real images and fake, see in <a href="./Trainings/training_boosting.py">training_boosting.py</a>.
+
 ## DC-GAN 
 
 
+### DC-GAN Architecture
 
-
-The WESAD is a dataset built by Schmidt P et al [[1]](#1) because there was no dataset for stress detection with physiological at this time.
-
-Among the measures, the dataset contains Electrocardiogram measures of 15 subjects during 2hours with stressing, amusing, relaxing and neutral situation. The ECG is measured with an ECG sensor placed on the chest with a frequency of 700Hz. This is a 20s sample from the dataset:
-
-<p align="center">
-  <img alt="ECG Sample" title="ECG Sample" src="./Media/ECG.PNG">
-</p>
-
-## Data Pre-Processing
-
-The Preprocessing of the data is done from the WESAD dataset raw data using the notebooks <a href="./Dataset creator.ipynb">Dataset Creator.ipynb</a> (for Training dataset) and <a href="./Testing ds creator.ipynb">Testing ds creator.ipynb</a>(for testing dataset)
-
-I used <a href="https://github.com/paulvangentcom/heartrate_analysis_python">HeartPy</a> to detect the ECG peaks in the signals. From the ECG signal I was able to extract features from 20s extract that appeared to be relevant in the WESAD paper [[1]](#1).
- 
-<div align="center">
-
-| Features      |Units           |
-|:-------------:|:-------------:|
-|Mean Heart Rate | Beat/s|
-|STD Heart Rate | Beat/s|
-|TINN | s|
-|HRVindex | None|
-|\#NN50 | None|
-|pNN50 | None|
-|Mean HRV | s|
-|STD HRV | s|
-|RMS HRV | s|
-|Mean Fourier Frequencies | Hz|
-|STD Fourier Frequencies | Hz|
-|Sum PSD components | None|
-
-</div>
-
-The exact computation of these features is detailled in the WESAD paper [[1]](#1) and in the <a href="./DataPreProcessing Detail.pdf">joined pdf</a>. The computation is also detailled in the comments of the code.
-
-The training has been done with a cross-validation process. I extracted features from samples of 20s with a 1s step from every recording, these samples were coupled with a label : 1=neutral ; 2=stress ; 3=amusement ; 4=meditation. As ECG is very person dependant, I selected a 90s of the baseline (neutral state), extracted the features and for every 20s sample I divided the features of the sample by the features of the baseline to have a comparison of the sample with a neutral moment from the baseline.
+A Deep Convolutionnal GAN (DC-GAN) is developped for (64px and 256px) using <a href="./Models/gan_64.py">gan_64.py</a> and <a href="./Models/gan_256.py">gan_256.py</a> with mode "dcgan".
+The architecture of the GAN is given by the following figures :
 
 <p align="center">
-  <img alt="Features Extraction" title="Features Extraction" src="./Media/features.PNG" >
+  <img alt="Features Extraction" title="Features Extraction" src="./Media/Generator.PNG" >
+</p>
+<p align="center">
+  <img alt="Features Extraction" title="Features Extraction" src="./Media/Discriminant_DC.PNG" >
+</p>
+<p align="center">
+  <img alt="Features Extraction" title="Features Extraction" src="./Media/DCtraining.PNG" >
 </p>
 
-I split the data of the 15 subjects into training, validation and testing to avoid overfitting (as my features extracted from 20s samples with a sliding windows picking training and validation/testing data on a same subject would cause overfitting).
-Subjects for training and validation has been permuted as I planned to use K-fold cross validation (2 subjects in validation, 12 in training), so 91 possible datasets. I selected subject 17 to be my testing subject and I never included this subject in the creation of the fold datasets.
+The generator input is a nz-sized vector (noise) that will be deconvolutionned into an image.
+The discrtiminant input is an image and the output is a number $\in$ [0;1]. 1 means that the image is considered as being real and 0 means that it is considered as being fake.
+
+### Classical Training
+
+The first training used is a classical DC GAN training, defined in <a href="./Trainings/training_classic.py">training_classic.py</a>. The discriminant D is fed with real (x) and fake (G(z)) images of the generator G at each iteration and the loss is calculated with a Binary Cross Entropy loss function :
+
+$$ D_{Loss}(x,z)= -(log(D(x)) + log(1-D(G(z))))$$
+$$ G_{Loss}(z)= -(log(D(G(z))))$$
+
+Then discriminant and generator are optimized in order to minimize these loss.
+An Adam optimizer (lr=0.0002, beta1=0.5, beta2=0.999) has been used for both networks.
+
+### Monitored Training
+The second training used is a classical DC GAN training with a monitoring of the loss values that influences the training, defined in <a href="./Trainings/training_monitoring.py">training_monitoring.py</a>. The discriminant and generator loss are defined as for a classical training. A threshold is defined such as at each iteration the discriminant is optimized only if :
+
+$$D_{Loss}>0.8*G_{Loss}$$
+
+This is done in order to prevent the discriminant to become too powerfull compared to the generator.
+An Adam optimizer (lr=0.0002, beta1=0.5, beta2=0.999) has been used for both networks.
+
+### Boost and Noisy Training
+The third training used is a DC GAN training defined in <a href="./Trainings/training_boosting.py">training_boosting.py</a>. At each iteration a random number k (uniform distribution) is computed and this number defines what will be trained in during this iteration and how.
+
+* if $0.0001 \lt k \lt 0.001$ for next 100 iterations(including this one) ONLY the discriminant will be trained with real images labeled as real and fake images labeled as fake. This results in a boosting of the training of the discriminant.
+* if $0.001 \lt k \lt 0.93$ this iteration the discriminant will be trained with real images labeled as real and fake images labeled as fake.
+* if $0.93 \le k \le 1$ this iteration the discriminant will be trained with real images labeled as fake and fake images labeled as real (Noisy Label) in order to add noise in the training for a most robust discriminant.
+* if $0 \le k \lt 0.0001$ for the next 100 iteration(including this one) ONLY the generator will be trained. This results in a boosting of the training of the generator.
+* if $0.001 \lt k \le 1$ for this iteration the generator will be trained.
+
+An Adam optimizer (lr=0.0002, beta1=0.5, beta2=0.999) has been used for both networks.
+
+## W-GAN
+### W-GAN Architecture
+
+A Wasserstein GAN (W-GAN) is developped for (64px and 256px) using <a href="./Models/gan_64.py">gan_64.py</a> and <a href="./Models/gan_256.py">gan_256.py</a> with mode "wgan".
+The architecture of the GAN is given by the following figures :
 
 <p align="center">
-  <img alt="Kfold Datasets" title="Kfold Datasets" src="./Media/Dataset kfold.PNG" >
+  <img alt="Features Extraction" title="Features Extraction" src="./Media/Generator.PNG" >
 </p>
-
-Finally for each created Training dataset, I have chosen to discard incorrect data (example :  2s between 2 peaks is not biologically possible) due to malfunctioning of sensor creating troubles in the peak detection. I also have chosen to balance the data set to have 50\% of stress data and 50\% of non-stress data, to improve learning.
-
 <p align="center">
-  <img alt="Balancing Datasets" title="Balancing Datasets" src="./Media/balancing.PNG" >
+  <img alt="Features Extraction" title="Features Extraction" src="./Media/Discriminant_WGAN.PNG" >
 </p>
-
-## Model and Training
-
-The training and results analysis (for cross-validation) of the model can be done using the notebooks <a href="./Model.ipynb">Model.ipynb</a>.
-
-My model is a Full Connected Neural Network. Each Full Connected (FC) layer is followed by a Batch Normalization layer, a Dropout(p= 0.5) layer and a LeakyRelu (a=0.2) layer. <br> The size of these layer decreases from 128 &#8594; 64 &#8594; 16 &#8594; 4 &#8594; 1. The final FC layer is followed by a Sigmoid function in order to obtain an output &#8712; [0;1]. 
-
-The input size is 12 and the output size is 1. An output > *a-given-threshold* is considered as a stress state.
-
 <p align="center">
-  <img alt="Neural Network Architecture" title="Neural Network Architecture" src="./Media/Network.PNG" >
+  <img alt="Features Extraction" title="Features Extraction" src="./Media/WGANtraining.PNG" >
 </p>
 
-For each fold (of the 91-fold) the model has been trained with :
+The generator input is a nz-sized vector (noise) that will be deconvolutionned into an image.
+The discrtiminant input is an image and the output is a number $\in \mathbb{R}$. This number is a score that assess the realness of the image.
 
-&#8594; **Loss Function** = Binary Cross Entropy <br>
-&#8594; **Epochs** = 15 <br>
-&#8594; **Batchsize** = 32 <br>
-&#8594; **Learning rate** = 0.0001 <br>
-&#8594; **Optimizer** = Adam(learning rate,beta1=0.9,beta2=0.999) <br>
+### W-GAN Training
 
-For each fold training the best model has been saved (based on validation set loss value) to compute the results of the cross validation.
+The training is a Wasserstein GAN training defined in <a href="./Trainings/training_wgan.py">training_wgan.py</a>.
+The discriminant D is fed with real (x) and fake (G(z)) images of the generator G at each iteration and the loss is calculated with a Binary Cross Entropy loss function :
 
-## Cross Validation Results
+$$ Distance_{D} = D_{Loss}(x,z) = (\sum_{i=1}^{batch size} D(x_{i}) - \sum_{j=1}^{batch size} D(G(z_{j})))$$
+$$ Distance_{G} = G_{Loss}(z)= -(\sum_{i=1}^{batch size} D(G(z_{i})))$$
 
-The **threshhold value** (used to predict the emotionnal state from the output) is set to 0.5.
-Confusion Matrix used :
+The goal of the discriminant is to maximize the distance $ Distance_{G} $ between the distributions of the score given of real image and the distribution of score given for fake images. In this project we choose to minimize $ -Distance_{D} $. The more the distribution will be separated the more the decision to assess if the image is real or fake is accurate.
+The goal of the generator is to minimize the distance $ Distance_{G} $ between the distributions of the score given of real image and the distribution of score given for fake images. The generator tries to fool the discriminant with generated image that should be classified as real, it is reducing the distance between the distributions.
+During this training we apply weights clipping on discriminant's weights and the discriminant is trained 3 times more than the generator.
 
-* A 2x2 confusion matrix with Stress/No stress as ground truth and Stress/No stress as prediction. This confusion matrix is computed from the validation set and the values in the confusion matrix represent a the % of the data of the validation set.
-* A 2x4 confusion matrix with Emotional state (Neutral,Stress,Amusement,Relax) as ground truth and Stress/No stress as prediction. This confusion matrix is computed from the validation set and the values in the confusion matrix represent a the % of the data of the validation set.
+A RMSProp optimizer (lr=5e-5) has been used for both networks for stability reasons.
 
-For the best model of each fold the two confusions matrixes are computed on the validation set and the average model confusion matrixes are computed.
+For more information on WGAN training check <a href="https://machinelearningmastery.com/how-to-implement-wasserstein-loss-for-generative-adversarial-networks/">this website</a>.
 
-<p align="center">
-  <img alt="Average Model Confusion Matrix" title="Average Model Confusion Matrix" src="./Media/average model confusion.png">
-</p>
+## Results
 
-From the best model of each fold these metrics have been computed on the validation set :
+Here are some results of the networks
 
-<p align="center">
-  <img alt="Accuracy" title="Accuracy" src="./Media/accuracy.png">
-</p><p align="center">
-  <img alt="Precision" title="Precision" src="./Media/precision.png">
-</p><p align="center">
-  <img alt="Recall" title="Recall" src="./Media/recall.png">
-</p><p align="center">
-  <img alt="F1 Score" title="F1 Score" src="./Media/f1score.png">
-</p>
+### DC-GAN classic
 
-The average metrics of my model are :
+### DC-GAN monitoring
 
-<div align="center">
+### DC-GAN boosting and noisy label
 
-| Metrics      | Mean &#177; Std|
-|:-------------:|:-------------:|
-|Accuracy | 0.920 &#177; 0.06|
-|Precision| 0.804 &#177; 0.132|
-|Recall| 0.845 &#177; 0.183|
-|F1 score| 0.818 &#177; 0.148|
+### W-GAN
 
-</div>
-
-The WESAD paper [[1]](#1) best result on only ECG signals from chest (using Linear Discriminant Analysis) gives:
-
-<div align="center">
-
-| Metrics      | Mean Value|
-|:-------------:|:-------------:|
-|Accuracy | 0.8544|
-|F1 score| 0.8131|
-
-</div>
-
-My Deep Learning model has an accuracy increased by **6.56%** and an f1 score increased by **0.49%**.
-
-## Testing Results
-
-The model has been retrained with the same process on the complete cross validation dataset (training + validation) to be tested on new data (subject 17 data). This has been done in the notebooks <a href="./Model_test.ipynb">Model_test.ipynb</a>. 
-The best model gives the following confusion matrixes for the testing set (Subject S17):
-
-<p align="center">
-  <img alt="Confusion Matrix on Testing set" title="Confusion Matrix on Testing set" src="./Media/testing confusion.png">
-</p>
-
-* **Accuracy** = 0.957
-* **Precision** = 0.851
-* **Recall** = 1.00
-* **F1 score** = 0.920
-
-## References
-<a id="1">[1]</a> Philip Schmidt et al. “Introducing WeSAD, a multimodal dataset for wearable stress and affect detection”. In: ICMI 2018 - Proceedings of the 2018 International Conference on Multimodal Interaction (Oct. 2018), pp. 400–408. doi: <a href="https://doi.org/10.1145/3242969.3242985">10.1145/3242969.3242985</a>.
+<!-- ## References
+<a id="1">[1]</a> Philip Schmidt et al. “Introducing WeSAD, a multimodal dataset for wearable stress and affect detection”. In: ICMI 2018 - Proceedings of the 2018 International Conference on Multimodal Interaction (Oct. 2018), pp. 400–408. doi: <a href="https://doi.org/10.1145/3242969.3242985">10.1145/3242969.3242985</a>. -->
