@@ -18,13 +18,13 @@
 
 ## Introduction
 
-This project aims to develop multiple image Generative Adversarial Network (GAN) using different datasets (roses and pokemon), differents model (DC-GAN and W-GAN will be used in this project) and different trainings process. 
+This project aims to develop multiple image Generative Adversarial Networks (GAN) using different datasets (roses and pokemon), different models (DC-GAN and W-GAN will be used in this project), and different training processes. 
 
 ## Dataset
 
-In this project I have used different dataset :
-* A rose dataset (in 64px) that I have scrapped on different website.
-* A rose dataset (in 256px) that I have scrapped on different website.
+In this project I have used different datasets :
+* A rose dataset (in 64px) that I have scrapped on different websites.
+* A rose dataset (in 256px) that I have scrapped on different websites.
 * A pokemon dataset (in 64px) that you can find on <a href="https://www.kaggle.com/search?q=pokemon">Kaggle</a>.
 * A pokemon dataset (in 256px) that you can find on <a href="https://www.kaggle.com/search?q=pokemon">Kaggle</a>.
 
@@ -32,7 +32,7 @@ In this project I have used different dataset :
 
 ###  Mini Batch Discrimination
 
-The following networks are mostly convolutionnal and deconvolutionnal networks. Yet it is known that GAN are based on complex equilibrium and that they can quickly become unstable and go to collapse mode :
+The following networks are mostly convolutional and deconvolutional networks. Yet it is known that GANs are based on complex equilibrium and that they can quickly become unstable and go into collapse mode :
 <p align="center">
   <img alt="Collapse Mode" title="Features Extraction" src="./Media/collapse.PNG" >
 </p>
@@ -40,18 +40,18 @@ In both DCGAN and WGAN models a Mini Batch Discrimination Layer is implemented i
 
 ### Label Smoothing
 
-In order to avoid overconfidence for the Discriminant in the DCGAN model a BCE with label smoothing is used, see the custom function in <a href="./Trainings/basic_functions.py">basic_functions.py</a>.
+To avoid overconfidence for the Discriminant in the DCGAN model a BCE with label smoothing is used, see the custom function in <a href="./Trainings/basic_functions.py">basic_functions.py</a>.
 
-### Noisy Label
+### Noisy Labels
 
-Once again to avoid overconfidence of the Discriminant, in one of the training of DCGAN model the label are swapped between real images and fake, see in <a href="./Trainings/training_boosting.py">training_boosting.py</a>.
+Once again to avoid overconfidence in the Discriminant, in one of the trainings of the DCGAN model, the labels are swapped between real images and fake, see in <a href="./Trainings/training_boosting.py">training_boosting.py</a>.
 
 ## DC-GAN 
 
 
 ### DC-GAN Architecture
 
-A Deep Convolutionnal GAN (DC-GAN) is developped for (64px and 256px) using <a href="./Models/gan_64.py">gan_64.py</a> and <a href="./Models/gan_256.py">gan_256.py</a> with mode "dcgan".
+A Deep Convolutional GAN (DC-GAN) is developed for (64px and 256px) using <a href="./Models/gan_64.py">gan_64.py</a> and <a href="./Models/gan_256.py">gan_256.py</a> with the mode "dcgan".
 The architecture of the GAN is given by the following figures :
 
 <p align="center">
@@ -64,8 +64,8 @@ The architecture of the GAN is given by the following figures :
   <img alt="Training DCGAN" title="Features Extraction" src="./Media/DCtraining.PNG" >
 </p>
 
-The generator input is a nz-sized vector (noise) that will be deconvolutionned into an image.
-The discrtiminant input is an image and the output is a number $\in$ [0;1]. 1 means that the image is considered as being real and 0 means that it is considered as being fake.
+The generator input is an nz-sized vector (noise) that will be deconvolutioned into an image.
+The discriminant input is an image and the output is a number $\in$ [0;1]. 1 means that the image is considered as being real and 0 means that it is considered as being fake.
 
 ### Classical Training
 
@@ -75,23 +75,23 @@ $$ D_{Loss}(x,z)= -(log(D(x)) + log(1-D(G(z))))$$
 
 $$ G_{Loss}(z)= -(log(D(G(z))))$$
 
-Then discriminant and generator are optimized in order to minimize these loss.
+Then discriminant and generator are optimized in order to minimize these losses.
 An Adam optimizer (lr=0.0002, beta1=0.5, beta2=0.999) has been used for both networks.
 
 ### Monitored Training
-The second training used is a classical DC GAN training with a monitoring of the loss values that influences the training, defined in <a href="./Trainings/training_monitoring.py">training_monitoring.py</a>. The discriminant and generator loss are defined as for a classical training. A threshold is defined such as at each iteration the discriminant is optimized only if :
+The second training used is a classic DC GAN training with monitoring of the loss values that influences the training, defined in <a href="./Trainings/training_monitoring.py">training_monitoring.py</a>. The discriminant and generator loss are defined as for a classic training. A threshold is defined such as at each iteration the discriminant is optimized only if :
 
 $$D_{Loss}>0.8*G_{Loss}$$
 
-This is done in order to prevent the discriminant to become too powerfull compared to the generator.
+This is done in order to prevent the discriminant to become too powerful compared to the generator.
 An Adam optimizer (lr=0.0002, beta1=0.5, beta2=0.999) has been used for both networks.
 
 ### Boost and Noisy Training
-The third training used is a DC GAN training defined in <a href="./Trainings/training_boosting.py">training_boosting.py</a>. At each iteration a random number k (uniform distribution) is computed and this number defines what will be trained in during this iteration and how.
+The third training used is a DC GAN training defined in <a href="./Trainings/training_boosting.py">training_boosting.py</a>. At each iteration, a random number k (uniform distribution) is computed and this number defines what will be trained in during this iteration and how.
 
-* if $0.0001 \lt k \lt 0.001$ for next 100 iterations(including this one) ONLY the discriminant will be trained with real images labeled as real and fake images labeled as fake. This results in a boosting of the training of the discriminant.
+* if $0.0001 \lt k \lt 0.001$ for the next 100 iterations(including this one) ONLY the discriminant will be trained with real images labeled as real and fake images labeled as fake. This results in a boosting of the training of the discriminant.
 * if $0.001 \lt k \lt 0.93$ this iteration the discriminant will be trained with real images labeled as real and fake images labeled as fake.
-* if $0.93 \le k \le 1$ this iteration the discriminant will be trained with real images labeled as fake and fake images labeled as real (Noisy Label) in order to add noise in the training for a most robust discriminant.
+* if $0.93 \le k \le 1$ this iteration the discriminant will be trained with real images labeled as fake and fake images labeled as real (Noisy Label) in order to add noise in the training for a more robust discriminant.
 * if $0 \le k \lt 0.0001$ for the next 100 iteration(including this one) ONLY the generator will be trained. This results in a boosting of the training of the generator.
 * if $0.001 \lt k \le 1$ for this iteration the generator will be trained.
 
@@ -100,7 +100,7 @@ An Adam optimizer (lr=0.0002, beta1=0.5, beta2=0.999) has been used for both net
 ## W-GAN
 ### W-GAN Architecture
 
-A Wasserstein GAN (W-GAN) is developped for (64px and 256px) using <a href="./Models/gan_64.py">gan_64.py</a> and <a href="./Models/gan_256.py">gan_256.py</a> with mode "wgan".
+A Wasserstein GAN (W-GAN) is developed for (64px and 256px) using <a href="./Models/gan_64.py">gan_64.py</a> and <a href="./Models/gan_256.py">gan_256.py</a> with the mode "wgan".
 The architecture of the GAN is given by the following figures :
 
 <p align="center">
@@ -113,8 +113,8 @@ The architecture of the GAN is given by the following figures :
   <img alt="W-GAN training" title="Features Extraction" src="./Media/WGANtraining.PNG" >
 </p>
 
-The generator input is a nz-sized vector (noise) that will be deconvolutionned into an image.
-The discrtiminant input is an image and the output is a number $\in \mathbb{R}$. This number is a score that assess the realness of the image.
+The generator input is a nz-sized vector (noise) that will be deconvolutioned into an image.
+The discriminant input is an image and the output is a number $\in \mathbb{R}$. This number is a score that assesses the realness of the image.
 
 ### W-GAN Training
 
@@ -125,11 +125,11 @@ $$ Distance_{D} = D_{Loss}(x,z) = (\sum_{i=1}^{batch size} D(x_{i}) - \sum_{j=1}
 
 $$ Distance_{G} = G_{Loss}(z)= -(\sum_{i=1}^{batch size} D(G(z_{i})))$$
 
-The goal of the discriminant is to maximize the distance $Distance_{D}$ between the distributions of the score given of real image and the distribution of score given for fake images. In this project we choose to minimize $-Distance_{D}$. The more the distribution will be separated the more the decision to assess if the image is real or fake is accurate.
-The goal of the generator is to minimize the distance $Distance_{G}$ between the distributions of the score given of real image and the distribution of score given for fake images. The generator tries to fool the discriminant with generated image that should be classified as real, it is reducing the distance between the distributions.
-During this training we apply weights clipping on discriminant's weights and the discriminant is trained 3 times more than the generator.
+The goal of the discriminant is to maximize the distance $Distance_{D}$ between the distributions of the score given for real images and the distribution of the score given for fake images. In this project, we choose to minimize $-Distance_{D}$. The more the distribution will be separated the more the decision to assess if the image is real or fake is accurate.
+The goal of the generator is to minimize the distance $Distance_{G}$ between the distributions of the score given for real images and the distribution of the score given for fake images. The generator tries to fool the discriminant with generated images that should be classified as real, it is reducing the distance between the distributions.
+During this training, we apply weights clipping on the discriminant's weights and the discriminant is trained 3 times more than the generator.
 
-A RMSProp optimizer (lr=5e-5) has been used for both networks for stability reasons.
+An RMSProp optimizer (lr=5e-5) has been used for both networks for stability reasons.
 
 For more information on WGAN training check <a href="https://machinelearningmastery.com/how-to-implement-wasserstein-loss-for-generative-adversarial-networks/">this website</a>.
 

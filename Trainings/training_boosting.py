@@ -21,7 +21,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                     - 0.001<k<0.93 this iteration the discriminant will be trained with real images labeled as real
                         and fake images labeled as fake
                     - 0.93<=k<=1 this iteration the discriminant will be trained with real images labeled as fake
-                        and fake images labeled as real in order to add noise in the training for a most robust discriminant
+                        and fake images labeled as real in order to add noise in the training for a more robust discriminant
                     - 0<=k<0.0001 for the next 100 iteration(including this one) ONLY the generator will be trained
                     - 0.001<k<=1 for this iteration the generator will be trained
 
