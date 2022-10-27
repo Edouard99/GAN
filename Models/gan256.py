@@ -39,6 +39,7 @@ class MinibatchDiscrimination2d(nn.Module):
         out = torch.sum(torch.exp(-(torch.abs(M - M_t).sum(3))), dim=0) - 1
         out = out.view(-1,self.out_flt,self.t,self.t)
         out_a = self.conv2dt(out)
+        print(out_a.shape)
         return torch.cat([x, out_a], 1)
 
 # custom weights initialization called on netG and netD
