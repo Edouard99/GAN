@@ -142,10 +142,7 @@ class Discriminator(nn.Module):
             # state size. (ndf*4) x 8 x 8
             nn.Conv2d(ndf*4, ndf * 8, 4, 2, 1, bias=False),
             nn.BatchNorm2d(ndf * 8),
-            nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf*8) x 4 x 4
-            nn.Conv2d(ndf * 8, 1, 4, 1, 0, bias=False),
-            nn.Sigmoid()
+            nn.LeakyReLU(0.2, inplace=True)
         )
         if self.mode=="wgan":
             self.final_layer=nn.Sequential(
