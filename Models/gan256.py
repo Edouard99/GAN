@@ -39,7 +39,6 @@ class MinibatchDiscrimination2d(nn.Module):
         out = torch.sum(torch.exp(-(torch.abs(M - M_t).sum(3))), dim=0) - 1
         out = out.view(-1,self.out_flt,self.t,self.t)
         out_a = self.conv2dt(out)
-        print(out_a.shape)
         return torch.cat([x, out_a], 1)
 
 # custom weights initialization called on netG and netD
@@ -150,7 +149,8 @@ class Discriminator(nn.Module):
         )
         if self.mode=="wgan":
             self.final_layer=nn.Sequential(
-                nn.Conv2d(ndf * 8, 1, 4, 1, 0, bias=False),
+                nn.Flatten(),
+                nn.Linear(ndf*8*4*4,1)
             )
         else:
             self.final_layer=nn.Sequential(
