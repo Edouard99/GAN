@@ -124,7 +124,7 @@ class Discriminator(nn.Module):
             nn.Conv2d(nc, int(ndf/4), 4, 2, 1, bias=False),
             nn.LeakyReLU(0.2, inplace=True),
             # state size. (ndf/4) x 128 x 128
-            MinibatchDiscrimination2d(128,int(ndf/4),2,device,6),
+            MinibatchDiscrimination2d(128,int(ndf/4),2,device,4),
             nn.Conv2d(int(ndf/4)+2, int(ndf/2), 4, 2, 1, bias=False),
             nn.BatchNorm2d(int(ndf/2)),
             nn.LeakyReLU(0.2, inplace=True),
