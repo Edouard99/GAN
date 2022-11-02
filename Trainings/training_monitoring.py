@@ -132,13 +132,15 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                     display(array_to_img(np.transpose(faken,(1,2,0))))
             iters += 1    
         # Saves the network and images
-        if epoch%4==0 :
+        if epoch%1==0 :
             with torch.no_grad():
               fake = netG(fixed_noise).detach().cpu()
             img_list.append(vutils.make_grid(fake, padding=2, normalize=True))
             if (savenet):
                 torch.save(netD.state_dict(), os.path.join(pathsavenet,"netD"+str(epoch)+".pth"))
                 torch.save(netG.state_dict(), os.path.join(pathsavenet,"netG"+str(epoch)+".pth"))
+                torch.save(optimizerD.state_dict(), os.path.join(pathsavenet,"optimD"+str(epoch)+".pth"))
+                torch.save(optimizerG.state_dict(), os.path.join(pathsavenet,"optimG"+str(epoch)+".pth"))
             img_to_save=np.transpose(vutils.make_grid(fake, padding=2, normalize=True).cpu().numpy(),(1,2,0))
             plt.imsave(os.path.join(pathsaveimg,"grid_"+str(epoch)+".png"),img_to_save)
             plt.imshow(img_to_save)
