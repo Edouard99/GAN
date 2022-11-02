@@ -25,7 +25,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
                     - 0<=k<0.0001 for the next 100 iteration(including this one) ONLY the generator will be trained
                     - 0.001<k<=1 for this iteration the generator will be trained
 
-        Each 4 epochs this function saves the network weights (optionnal: savenet=True/False) and saves a grid of images generated from fixed noise
+        Each epoch this function saves the network weights (optionnal: savenet=True/False) and saves a grid of images generated from fixed noise
         This function returns a list of the images grids generated during training, the Generator Loss and the Discriminant Loss evolution
 
             dataloader : dataloader object that will load your images and feed it to the network (torch dataloader)

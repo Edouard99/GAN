@@ -25,8 +25,8 @@ This project aims to develop multiple image Generative Adversarial Networks (GAN
 In this project I have used different datasets :
 * A rose dataset (in 64px) that I have scrapped on different websites.
 * A rose dataset (in 256px) that I have scrapped on different websites.
-* A pokemon dataset (in 64px) that you can find on <a href="https://www.kaggle.com/search?q=pokemon">Kaggle</a>.
-* A pokemon dataset (in 256px) that you can find on <a href="https://www.kaggle.com/search?q=pokemon">Kaggle</a>.
+* A pokemon dataset (with data augmentation in 64px) that you can find <a href="https://drive.google.com/file/d/1mKWPRvdYg6jfN6G8AFxsHpzjo3608QaJ/view">here</a>.
+* A pokemon dataset (with data augmentation in 256px) that you can find <a href="https://drive.google.com/file/d/19sQKN9H4gmNPxQLLtjDmw5SV5KZ4Q1n1/view">here</a>.
 
 ## Special Gan Features 
 
@@ -76,7 +76,7 @@ $$ D_{Loss}(x,z)= -(log(D(x)) + log(1-D(G(z))))$$
 $$ G_{Loss}(z)= -(log(D(G(z))))$$
 
 Then discriminant and generator are optimized in order to minimize these losses.
-An Adam optimizer (lr=0.0002, beta1=0.5, beta2=0.999) has been used for both networks.
+An Adam optimizer (lr=0.00015, beta1=0.5, beta2=0.999) has been used for both networks.
 
 ### Monitored Training
 The second training used is a classic DC GAN training with monitoring of the loss values that influences the training, defined in <a href="./Trainings/training_monitoring.py">training_monitoring.py</a>. The discriminant and generator loss are defined as for a classic training. A threshold is defined such as at each iteration the discriminant is optimized only if :
@@ -84,7 +84,7 @@ The second training used is a classic DC GAN training with monitoring of the los
 $$D_{Loss}>0.8*G_{Loss}$$
 
 This is done in order to prevent the discriminant to become too powerful compared to the generator.
-An Adam optimizer (lr=0.0002, beta1=0.5, beta2=0.999) has been used for both networks.
+An Adam optimizer (lr=0.00015, beta1=0.5, beta2=0.999) has been used for both networks.
 
 ### Boost and Noisy Training
 The third training used is a DC GAN training defined in <a href="./Trainings/training_boosting.py">training_boosting.py</a>. At each iteration, a random number k (uniform distribution) is computed and this number defines what will be trained in during this iteration and how.
@@ -95,7 +95,7 @@ The third training used is a DC GAN training defined in <a href="./Trainings/tra
 * if $0 \le k \lt 0.0001$ for the next 100 iteration(including this one) ONLY the generator will be trained. This results in a boosting of the training of the generator.
 * if $0.001 \lt k \le 1$ for this iteration the generator will be trained.
 
-An Adam optimizer (lr=0.0002, beta1=0.5, beta2=0.999) has been used for both networks.
+An Adam optimizer (lr=0.00015, beta1=0.5, beta2=0.999) has been used for both networks.
 
 ## W-GAN
 ### W-GAN Architecture

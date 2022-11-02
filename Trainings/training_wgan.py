@@ -22,7 +22,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
         For more information on WGAN training check : https://machinelearningmastery.com/how-to-implement-wasserstein-loss-for-generative-adversarial-networks/
 
 
-        Each 4 epochs this function saves the network weights (optionnal: savenet=True/False) and saves a grid of images generated from fixed noise
+        Each epoch this function saves the network weights (optionnal: savenet=True/False) and saves a grid of images generated from fixed noise
         This function returns a list of the images grids generated during training, the Generator Loss and the Discriminant Loss evolution
 
             dataloader : dataloader object that will load your images and feed it to the network (torch dataloader)

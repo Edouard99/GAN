@@ -15,7 +15,7 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
         Generator's Loss is based on Discriminant results on generated images.
         Discriminant's and Generator's weights are optimized in order to minimize each loss.
 
-        Each 4 epochs this function saves the network weights (optionnal: savenet=True/False) and saves a grid of images generated from fixed noise
+        Each epoch this function saves the network weights (optionnal: savenet=True/False) and saves a grid of images generated from fixed noise
         This function returns a list of the images grids generated during training, the Generator Loss and the Discriminant Loss evolution.
 
             dataloader : dataloader object that will load your images and feed it to the network (torch dataloader)
@@ -52,13 +52,6 @@ def train(dataloader,netD,netG,optimizerD,optimizerG,num_epochs,device,savenet,p
             b_size = real_cpu.size(0)
             label = torch.full((b_size,), real_label, dtype=torch.float, device=device)
             output = netD(real_cpu).view(-1)
-            if iters==0:
-              zizi=output
-              zozo=label
-              zaza=real_cpu
-              print(zizi.detach().cpu().numpy())
-              print(zaza.detach().cpu().numpy())
-              print(zozo.detach().cpu().numpy())
             errD_real = BCEsmooth(output, label,device)
             errD_real.backward()
             D_x = output.mean().item() # Mean prediction on the real batch
