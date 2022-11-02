@@ -18,13 +18,11 @@
 
 ## Introduction
 
-This project aims to develop multiple image Generative Adversarial Networks (GAN) using different datasets (roses and pokemon), different models (DC-GAN and W-GAN will be used in this project), and different training processes. 
+This project aims to develop multiple image Generative Adversarial Networks (GAN) using different datasets (64px and 256px images of pokemons), different models (DC-GAN and W-GAN will be used in this project), and different training processes. 
 
 ## Dataset
 
 In this project I have used different datasets :
-* A rose dataset (in 64px) that I have scrapped on different websites.
-* A rose dataset (in 256px) that I have scrapped on different websites.
 * A pokemon dataset (with data augmentation in 64px) that you can find <a href="https://drive.google.com/file/d/1mKWPRvdYg6jfN6G8AFxsHpzjo3608QaJ/view">here</a>.
 * A pokemon dataset (with data augmentation in 256px) that you can find <a href="https://drive.google.com/file/d/19sQKN9H4gmNPxQLLtjDmw5SV5KZ4Q1n1/view">here</a>.
 
