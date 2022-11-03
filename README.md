@@ -65,9 +65,9 @@ The architecture of the GAN is given by the following figures :
 The generator input is an nz-sized vector (noise) that will be deconvoluted into an image.
 The discriminant's input is an image and the output is a number $\in$ [0;1]. 1 means that the image is considered as being real and 0 means that it is considered as being fake.
 
-### Classical Training
+### Classic Training
 
-The first training used is a classical DC GAN training, defined in <a href="./Trainings/training_classic.py">training_classic.py</a>. The discriminant D is fed with real (x) and fake (G(z)) images of the generator G at each iteration and the loss is calculated with a Binary Cross Entropy loss function :
+The first training used is a classic DC GAN training, defined in <a href="./Trainings/training_classic.py">training_classic.py</a>. The discriminant D is fed with real (x) and fake (G(z)) images of the generator G at each iteration and the loss is calculated with a Binary Cross Entropy loss function :
 
 $$ D_{Loss}(x,z)= -(log(D(x)) + log(1-D(G(z))))$$
 
