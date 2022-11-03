@@ -18,7 +18,7 @@
 
 ## Introduction
 
-This project aims to develop multiple image Generative Adversarial Networks (GAN) using different datasets (64px and 256px images of pokemons), different models (DC-GAN and W-GAN will be used in this project), and different training processes. 
+This project aims to develop multiple image Generative Adversarial Networks (GAN) using different datasets (64px and 256px images of pokemon), different models (DC-GAN and W-GAN will be used in this project), and different training processes. 
 
 ## Dataset
 
@@ -34,11 +34,11 @@ The following networks are mostly convolutional and deconvolutional networks. Ye
 <p align="center">
   <img alt="Collapse Mode" title="Features Extraction" src="./Media/collapse.PNG" >
 </p>
-In both DCGAN and WGAN models a Mini Batch Discrimination Layer is implemented in the Discriminant. This layer prevents the Generator to produce the same image for multiple inputs. For more information see <a href="https://towardsdatascience.com/gan-ways-to-improve-gan-performance-acf37f9f59b">this link</a>.
+In both DCGAN and WGAN models a Mini Batch Discrimination Layer is implemented in the Discriminant. This layer prevents the Generator to produce the same image for multiple inputs. For more informations see <a href="https://towardsdatascience.com/gan-ways-to-improve-gan-performance-acf37f9f59b">this link</a>.
 
 ### Label Smoothing
 
-To avoid overconfidence for the Discriminant in the DCGAN model a BCE with label smoothing is used, see the custom function in <a href="./Trainings/basic_functions.py">basic_functions.py</a>.
+To avoid overconfidence for the Discriminant in the DCGAN model a BCE with label smoothing is used. See the custom function in <a href="./Trainings/basic_functions.py">basic_functions.py</a>.
 
 ### Noisy Labels
 
@@ -62,8 +62,8 @@ The architecture of the GAN is given by the following figures :
   <img alt="Training DCGAN" title="Features Extraction" src="./Media/DCtraining.PNG" >
 </p>
 
-The generator input is an nz-sized vector (noise) that will be deconvolutioned into an image.
-The discriminant input is an image and the output is a number $\in$ [0;1]. 1 means that the image is considered as being real and 0 means that it is considered as being fake.
+The generator input is an nz-sized vector (noise) that will be deconvoluted into an image.
+The discriminant's input is an image and the output is a number $\in$ [0;1]. 1 means that the image is considered as being real and 0 means that it is considered as being fake.
 
 ### Classical Training
 
@@ -73,24 +73,24 @@ $$ D_{Loss}(x,z)= -(log(D(x)) + log(1-D(G(z))))$$
 
 $$ G_{Loss}(z)= -(log(D(G(z))))$$
 
-Then discriminant and generator are optimized in order to minimize these losses.
+Then discriminant and generator are optimized to minimize these losses.
 An Adam optimizer (lr=0.00015, beta1=0.5, beta2=0.999) has been used for both networks.
 
 ### Monitored Training
-The second training used is a classic DC GAN training with monitoring of the loss values that influences the training, defined in <a href="./Trainings/training_monitoring.py">training_monitoring.py</a>. The discriminant and generator loss are defined as for a classic training. A threshold is defined such as at each iteration the discriminant is optimized only if :
+The second training used is a classic DC GAN training with a monitoring of the loss values that influences the training, defined in <a href="./Trainings/training_monitoring.py">training_monitoring.py</a>. The discriminant and generator loss are defined as for a classic training. A threshold is defined such as at each iteration the discriminant is optimized only if :
 
 $$D_{Loss}>0.8*G_{Loss}$$
 
-This is done in order to prevent the discriminant to become too powerful compared to the generator.
+This is done to prevent the discriminant to become too powerful compared to the generator.
 An Adam optimizer (lr=0.00015, beta1=0.5, beta2=0.999) has been used for both networks.
 
 ### Boost and Noisy Training
-The third training used is a DC GAN training defined in <a href="./Trainings/training_boosting.py">training_boosting.py</a>. At each iteration, a random number k (uniform distribution) is computed and this number defines what will be trained in during this iteration and how.
+The third training used is a DC GAN training defined in <a href="./Trainings/training_boosting.py">training_boosting.py</a>. At each iteration, a random number k (uniform distribution) is computed and this number defines what will be trained during this iteration and how.
 
-* if $0.0001 \lt k \lt 0.001$ for the next 100 iterations(including this one) ONLY the discriminant will be trained with real images labeled as real and fake images labeled as fake. This results in a boosting of the training of the discriminant.
+* if $0.0001 \lt k \lt 0.001$ for the next 100 iterations(including this one) ONLY the discriminant will be trained with real images labeled as real and fake images labeled as fake. This results in a boost in the training of the discriminant.
 * if $0.001 \lt k \lt 0.93$ this iteration the discriminant will be trained with real images labeled as real and fake images labeled as fake.
 * if $0.93 \le k \le 1$ this iteration the discriminant will be trained with real images labeled as fake and fake images labeled as real (Noisy Label) in order to add noise in the training for a more robust discriminant.
-* if $0 \le k \lt 0.0001$ for the next 100 iteration(including this one) ONLY the generator will be trained. This results in a boosting of the training of the generator.
+* if $0 \le k \lt 0.0001$ for the next 100 iteration(including this one) ONLY the generator will be trained. This results in a boost in the training of the generator.
 * if $0.001 \lt k \le 1$ for this iteration the generator will be trained.
 
 An Adam optimizer (lr=0.00015, beta1=0.5, beta2=0.999) has been used for both networks.
@@ -111,8 +111,8 @@ The architecture of the GAN is given by the following figures :
   <img alt="W-GAN training" title="Features Extraction" src="./Media/WGANtraining.PNG" >
 </p>
 
-The generator input is a nz-sized vector (noise) that will be deconvolutioned into an image.
-The discriminant input is an image and the output is a number $\in \mathbb{R}$. This number is a score that assesses the realness of the image.
+The generator input is a nz-sized vector (noise) that will be deconvoluted into an image.
+The discriminant's input is an image and the output is a number $\in \mathbb{R}$. This number is a score that assesses the realness of the image.
 
 ### W-GAN Training
 
@@ -129,11 +129,11 @@ During this training, we apply weights clipping on the discriminant's weights an
 
 An RMSProp optimizer (lr=5e-5) has been used for both networks for stability reasons.
 
-For more information on WGAN training check <a href="https://machinelearningmastery.com/how-to-implement-wasserstein-loss-for-generative-adversarial-networks/">this website</a>.
+For more informations on WGAN training check <a href="https://machinelearningmastery.com/how-to-implement-wasserstein-loss-for-generative-adversarial-networks/">this website</a>.
 
 ## Results
 
-Here are some results of the networks
+Here are some results of the networks :
 
 ### DC-GAN classic
 
