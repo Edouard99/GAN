@@ -137,11 +137,50 @@ Here are some results of the networks :
 
 ### DC-GAN classic
 
+<p align="center">
+  <img alt="Classic DCGAN gif" title="Classic DCGAN gif" src="./Media/animpokemon64_dcgan_classic_150.gif" width="450">
+</p>
+
+<p align="center">
+  <img alt="Classic DCGAN last" title="Classic DCGAN last" src="./Media/pokemon64_dcgan_classic_150.png" width="450">
+</p>
+
 ### DC-GAN monitoring
+
+<p align="center">
+  <img alt="Monitoring DCGAN gif" title="Monitoring DCGAN gif" src="./Media/animpokemon64_dcgan_monitoring_150.gif" width="450">
+</p>
+
+<p align="center">
+  <img alt="Monitoring DCGAN last" title="Monitoring DCGAN last" src="./Media/pokemon64_dcgan_monitoring_150.png" width="450">
+</p>
 
 ### DC-GAN boosting and noisy label
 
+<p align="center">
+  <img alt="Boost DCGAN gif" title="Boost DCGAN gif" src="./Media/animpokemon64_dcgan_boosting_150.gif" width="450">
+</p>
+
+<p align="center">
+  <img alt="Boost DCGAN last" title="Boost DCGAN last" src="./Media/pokemon64_dcgan_boosting_150.png" width="450">
+</p>
+
 ### W-GAN
 
-<!-- ## References
-<a id="1">[1]</a> Philip Schmidt et al. “Introducing WeSAD, a multimodal dataset for wearable stress and affect detection”. In: ICMI 2018 - Proceedings of the 2018 International Conference on Multimodal Interaction (Oct. 2018), pp. 400–408. doi: <a href="https://doi.org/10.1145/3242969.3242985">10.1145/3242969.3242985</a>. -->
+<p align="center">
+  <img alt="WGAN gif" title="WGAN gif" src="./Media/animpokemon64_wgan_150.gif" width="450">
+</p>
+
+<p align="center">
+  <img alt="WGAN last" title="WGAN last" src="./Media/pokemon64_wgan_150.png" width="450">
+</p>
+
+## Conclusion
+
+Once trained, the 64px networks produce images with sharp edges like small terrifying monsters.
+
+Moreover the Mini Bacth Discrimination layer seems to perform well : even images that looks close have some variations (same type of pokemon but still a bit different). Even with a small latent space the networks always produce different outputs.
+
+An improvement of these 64px networks is planned in the future.
+
+For now, I have trained the 256px networks and obtained good results (images with sharp edges). Yet I believe that I need to tune the hyperparameters to get better results. These networks takes a lot of time to train so I will update this project as soon as I will have the time to compute good results !
