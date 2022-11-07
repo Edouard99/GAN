@@ -19,7 +19,7 @@
 
 ## Introduction
 
-This project aims to develop multiple image Generative Adversarial Networks (GAN) using different datasets (64px and 256px images of pokemon), different models (DC-GAN and W-GAN will be used in this project), and different training processes. 
+This project aims at developing multiple image Generative Adversarial Networks (GAN) using different datasets (64px and 256px images of pokemon), different models (DC-GAN and W-GAN will be used in this project), and different training processes. 
 
 ## Try my models
 
@@ -186,6 +186,6 @@ Once trained, the 64px networks produce images with sharp edges like small terri
 
 Moreover the Mini Bacth Discrimination layer seems to perform well : even images that looks close have some variations (same type of pokemon but still a bit different). Even with a small latent space the networks always produce different outputs.
 
-An improvement of these 64px networks is planned in the future.
+An improvement of these 64px networks is planned for the future.
 
 For now, I have trained the 256px networks and obtained good results (images with sharp edges). Yet I believe that I need to tune the hyperparameters to get better results. These networks takes a lot of time to train so I will update this project as soon as I will have the time to compute good results !
