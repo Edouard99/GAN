@@ -1,5 +1,6 @@
 ## Table Of Contents
 * [Introduction](#introduction)
+* [Try my models](#try-my-models)
 * [Datasets](#datasets)
 * [Special GAN features](#special-gan-features)
   * [Mini Batch Discrimination](#mini-batch-discrimination)
@@ -19,6 +20,10 @@
 ## Introduction
 
 This project aims to develop multiple image Generative Adversarial Networks (GAN) using different datasets (64px and 256px images of pokemon), different models (DC-GAN and W-GAN will be used in this project), and different training processes. 
+
+## Try my models
+
+Check and try the <a href="Train.ipynb" target="_blank">Notebook</a> that I used to train my models : <a href="https://colab.research.google.com/github/Edouard99/GAN/blob/main/Train.ipynb" target="_blank">here on Google Colaboratory</a>
 
 ## Dataset
 
